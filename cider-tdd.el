@@ -39,15 +39,23 @@
 
 (defun my-cider-load-and-test-project ()
   (interactive)
-  (let ((paths (list-all-files-in-project "src" "test")))
-    (reset-counters)
-    (set-nr-of-files-to-load (length paths))
-    (evaluate-files paths)))
+  (my-cider-load-and-test-files
+   (list-all-files-in-project "src" "test")))
+
+(defun my-cider-load-and-test-current ()
+  (interactive)
+  (my-cider-load-and-test-files (list (buffer-file-name)))
+  )
+
+(defun my-cider-load-and-test-files (paths)
+  (reset-counters)
+  (set-nr-of-files-to-load (length paths))
+  (evaluate-files paths))
 
 (defun test-on-save ()
   (interactive)
   (when (member major-mode '(clojurec-mode clojure-mode))
-    (spacemacs/cider-test-run-project-tests)))
+    (my-cider-load-and-test-current)))
 
 (add-hook 'cider-file-loaded-hook 'maybe-run-tests)
 (add-hook 'after-save-hook 'test-on-save)
