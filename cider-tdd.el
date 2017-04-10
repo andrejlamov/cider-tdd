@@ -10,14 +10,8 @@
            nr-of-loaded-files)
        (not (eq 0 nr-of-files-to-load))))
 
-(defun set-nr-of-files-to-load (nr)
-  (setq nr-of-files-to-load nr))
-
-(defun inc-nr-of-loaded-files ()
-  (incf nr-of-loaded-files))
-
 (defun maybe-run-tests ()
-  (inc-nr-of-loaded-files)
+  (incf nr-of-loaded-files)
   (when (all-files-are-loaded)
     (cider-test-run-project-tests)))
 
@@ -44,18 +38,18 @@
 
 (defun my-cider-load-and-test-current ()
   (interactive)
-  (my-cider-load-and-test-files (list (buffer-file-name)))
-  )
+  (my-cider-load-and-test-files (list (buffer-file-name))))
 
 (defun my-cider-load-and-test-files (paths)
   (reset-counters)
-  (set-nr-of-files-to-load (length paths))
-  (evaluate-files paths))
+  (setq nr-of-files-to-load (length paths))
+  (evaluate-files paths)
+  (message "Loading and testing all files in project..."))
 
 (defun test-on-save ()
   (interactive)
   (when (member major-mode '(clojurec-mode clojure-mode))
-    (my-cider-load-and-test-current)))
+    (my-cider-load-and-test-project)))
 
 (add-hook 'cider-file-loaded-hook 'maybe-run-tests)
 (add-hook 'after-save-hook 'test-on-save)
