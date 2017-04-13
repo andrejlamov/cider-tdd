@@ -53,4 +53,4 @@
 
 (add-hook 'cider-file-loaded-hook 'maybe-run-tests)
 (add-hook 'after-save-hook 'test-on-save)
-(push '("*cider-test-report*" :width 0.3 :position right) popwin:special-display-config)
+(push '("*cider-test-report*" :width 0.6 :position right) popwin:special-display-config)
