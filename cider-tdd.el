@@ -16,7 +16,7 @@
     (cider-test-run-project-tests)))
 
 (defun construct-find-command (src-folder test-folder)
-  (format "find %s %s -name \"*.clj\""
+  (format "find %s %s -name \"*.clj\" -or -name \"*.cljc\""
           (concat (projectile-project-root) src-folder)
           (concat (projectile-project-root) test-folder)))
 
