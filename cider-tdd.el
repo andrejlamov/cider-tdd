@@ -20,12 +20,16 @@
           (concat (projectile-project-root) src-folder)
           (concat (projectile-project-root) test-folder)))
 
+(defun split-per-line (text)
+  (split-string text "\n"))
+
 (defun list-all-files-in-project (src-folder test-folder)
     (->>
      (construct-find-command src-folder test-folder)
      (shell-command-to-string)
      (string-trim)
-     ((lambda (output) (split-string output "\n")))
+     (split-per-line)
+     (mapcar 'string-trim)
      (mapcar 'file-truename)))
 
 (defun evaluate-files (paths)
