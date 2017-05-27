@@ -40,6 +40,11 @@
   (my-cider-load-and-test-files
    (list-all-files-in-project "src" "test")))
 
+(defun my-cider-refresh-and-test-project ()
+  (interactive)
+  (cider-refresh)
+  (cider-test-run-project-tests))
+
 (defun my-cider-load-and-test-current ()
   (interactive)
   (my-cider-load-and-test-files (list (buffer-file-name))))
@@ -53,7 +58,7 @@
 (defun test-on-save ()
   (interactive)
   (when (member major-mode '(clojurec-mode clojure-mode))
-    (my-cider-load-and-test-project)))
+    (my-cider-refresh-and-test-project)))
 
 (add-hook 'cider-file-loaded-hook 'maybe-run-tests)
 (add-hook 'after-save-hook 'test-on-save)
