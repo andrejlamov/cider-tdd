@@ -16,6 +16,10 @@
       (remove-surrounding-quotes)
       (add-surrounding-parentheses)))
 
+(defun save-if-file-buffer (&optional args)
+  (when (not (buffer-file-name))
+    (save-buffer)))
+
 ;;;; Core
 
 (defun eval-in-cljs-repl (expr)
@@ -43,3 +47,4 @@
 
 (advice-add 'cider-refresh--handle-response :after #'my-cider-refresh-hook)
 (advice-add 'cider-refresh :before 'save-buffer)
+(advice-add 'cider-refresh :before #'save-if-file-buffer)
