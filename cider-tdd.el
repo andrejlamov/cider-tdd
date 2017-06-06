@@ -20,6 +20,7 @@
 
 (defun eval-in-cljs-repl (expr)
   (with-current-buffer (cider-current-repl-buffer "cljs")
+    (end-of-buffer)
     (insert expr)
     (cider-repl-return)))
 
