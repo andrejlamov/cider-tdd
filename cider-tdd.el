@@ -42,7 +42,6 @@
 
 (defun ctdd-eval-test-run (response log-buffer)
   (when (ctdd-refresh-response-is-ok response)
-    (cider-sync-request:ns-load-all)
     (ctdd-eval-jsload)
     (cider-test-run-project-tests)))
 
