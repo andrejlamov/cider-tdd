@@ -1,6 +1,9 @@
 ;;;; Helper functions
+(defun refresh-response-is-ok (response)
+  (nrepl-dbind-response response (out err reloading status error error-ns after before)
+      (equal '("ok") status)))
 
-(defun match-out-return-value (response)
+(defun eval-response-get-return-value (response)
   (nrepl-dbind-response response
       (status id ns session value changed-ns repl-type)
     value))
@@ -31,17 +34,15 @@
 (defun eval-jsload ()
   (-> "(-> (figwheel-sidecar.system/fetch-config) :data :all-builds first :figwheel :on-jsload)"
        (cider-nrepl-sync-request:eval)
-       (match-out-return-value)
+       (eval-response-get-return-value)
        (reformat)
        (eval-in-cljs-repl)))
 
 (defun eval-test-run (response log-buffer)
-  (nrepl-dbind-response response (out err reloading status error error-ns after before)
-    (if (equal '("ok") status)
-        (progn
-          (cider-sync-request:ns-load-all)
-          (eval-jsload)
-          (cider-test-run-project-tests)))))
+  (when (refresh-response-is-ok response)
+    (cider-sync-request:ns-load-all)
+    (eval-jsload)
+    (cider-test-run-project-tests)))
 
 ;;;; Hook
 
