@@ -35,7 +35,7 @@
        (reformat)
        (eval-in-cljs-repl)))
 
-(defun my-cider-refresh-hook (response log-buffer)
+(defun eval-test-run (response log-buffer)
   (nrepl-dbind-response response (out err reloading status error error-ns after before)
     (if (equal '("ok") status)
         (progn
@@ -45,6 +45,5 @@
 
 ;;;; Hook
 
-(advice-add 'cider-refresh--handle-response :after #'my-cider-refresh-hook)
-(advice-add 'cider-refresh :before 'save-buffer)
+(advice-add 'cider-refresh--handle-response :after #'eval-test-run)
 (advice-add 'cider-refresh :before #'save-if-file-buffer)
