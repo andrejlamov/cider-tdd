@@ -22,7 +22,7 @@
       (ctdd-add-surrounding-parentheses)))
 
 (defun ctdd-save-if-file-buffer (&optional args)
-  (when (not (buffer-file-name))
+  (when (buffer-file-name)
     (save-buffer)))
 
 ;;;; Core
