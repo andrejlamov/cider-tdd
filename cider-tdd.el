@@ -40,8 +40,8 @@
     (if (equal '("ok") status)
         (progn
           (cider-sync-request:ns-load-all)
-          (cider-test-run-project-tests)
-          (eval-jsload)))))
+          (eval-jsload)
+          (cider-test-run-project-tests)))))
 
 ;;;; Hook
 
