@@ -34,6 +34,7 @@
     (cider-repl-return)))
 
 (defun ctdd-eval-jsload ()
+  (interactive)
   (-> "(-> (figwheel-sidecar.system/fetch-config) :data :all-builds first :figwheel :on-jsload)"
        (cider-nrepl-sync-request:eval)
        (ctdd-eval-response-get-return-value)
@@ -42,7 +43,6 @@
 
 (defun ctdd-eval-test-run (response log-buffer)
   (when (ctdd-refresh-response-is-ok response)
-    ;; (ctdd-eval-jsload)
     (cider-test-run-project-tests)))
 
 
@@ -54,17 +54,19 @@
 
 (setq cider-test-repl "*cider-repl test*")
 
-(defun jack-in-test-repl ()
+(defun jack-all-in ()
   (interactive)
   (cider-jack-in)
-  (add-hook 'cider-connected-hook 'rename-repl))
+  (add-hook 'cider-connected-hook 'rename-and-jack-in-rest))
 
-(defun rename-repl ()
+(defun rename-and-jack-in-rest ()
   (cider-change-buffers-designation "test")
-  (remove-hook 'cider-connected-hook 'rename-repl))
+  (remove-hook 'cider-connected-hook 'rename-and-jack-in-rest)
+  (cider-jack-in-clojurescript))
 
 (defun ctdd-test ()
   (interactive)
+  (ctdd-eval-jsload)
   (when cider-test-repl
     (cl-letf ((cider-request-dispatch 'static))
     (noflet ((cider-current-connection (&optional type) (get-buffer cider-test-repl)))
