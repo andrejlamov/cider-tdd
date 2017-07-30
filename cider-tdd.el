@@ -25,7 +25,7 @@
   (when (buffer-file-name)
     (save-buffer)))
 
-;;;; Core
+;;;; Refresh hook
 
 (defun ctdd-eval-in-cljs-repl (expr)
   (with-current-buffer (cider-current-repl-buffer "cljs")
@@ -42,10 +42,36 @@
 
 (defun ctdd-eval-test-run (response log-buffer)
   (when (ctdd-refresh-response-is-ok response)
-    (ctdd-eval-jsload)
+    ;; (ctdd-eval-jsload)
     (cider-test-run-project-tests)))
 
-;;;; Hook
 
 (advice-add 'cider-refresh--handle-response :after #'ctdd-eval-test-run)
 (advice-add 'cider-refresh :before #'ctdd-save-if-file-buffer)
+
+
+;;;; Test connection
+
+(setq cider-test-repl "*cider-repl test*")
+
+(defun jack-in-test-repl ()
+  (interactive)
+  (cider-jack-in)
+  (add-hook 'cider-connected-hook 'rename-repl))
+
+(defun rename-repl ()
+  (cider-change-buffers-designation "test")
+  (remove-hook 'cider-connected-hook 'rename-repl))
+
+(defun ctdd-test ()
+  (interactive)
+  (when cider-test-repl
+    (cl-letf ((cider-request-dispatch 'static))
+    (noflet ((cider-current-connection (&optional type) (get-buffer cider-test-repl)))
+      (cider-refresh)))))
+
+(defun remove-test-connection (connections)
+  (cl-remove-if (lambda (b) (equal (buffer-name b) cider-test-repl)) connections))
+
+(advice-add 'cider-find-connection-buffer-for-project-directory :filter-return #'remove-test-connection)
+(advice-add 'cider-connections :filter-return #'remove-test-connection)
