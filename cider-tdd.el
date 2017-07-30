@@ -1,9 +1,9 @@
 ;;;; Helper functions
 
-(defun ctdd-refresh-response-is-ok (response)
+(defun ctdd-refresh-response-status (response)
   (nrepl-dbind-response response
       (out err reloading status error error-ns after before)
-    (equal '("ok") status)))
+    status))
 
 (defun ctdd-eval-response-get-return-value (response)
   (nrepl-dbind-response response
@@ -42,9 +42,10 @@
        (ctdd-eval-in-cljs-repl)))
 
 (defun ctdd-eval-test-run (response log-buffer)
-  (when (ctdd-refresh-response-is-ok response)
-    (cider-test-run-project-tests)))
-
+  (pcase (ctdd-refresh-response-status response)
+    ('("ok") (cider-test-run-project-tests))
+    ('("error") (popwin:popup-buffer "*cider-refresh-log*"))
+    (other nil)))
 
 (advice-add 'cider-refresh--handle-response :after #'ctdd-eval-test-run)
 (advice-add 'cider-refresh :before #'ctdd-save-if-file-buffer)
