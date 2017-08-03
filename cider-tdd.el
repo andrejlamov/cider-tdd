@@ -57,13 +57,16 @@
 
 (defun jack-all-in ()
   (interactive)
+  (advice-add 'cider-find-connection-buffer-for-project-directory :filter-return #'remove-test-connection)
+  (advice-add 'cider-connections :filter-return #'remove-test-connection)
   (cider-jack-in)
   (add-hook 'cider-connected-hook 'rename-and-jack-in-rest))
 
 (defun rename-and-jack-in-rest ()
   (cider-change-buffers-designation "test")
   (remove-hook 'cider-connected-hook 'rename-and-jack-in-rest)
-  (cider-jack-in-clojurescript))
+  (cider-jack-in-clojurescript)
+  )
 
 (defun ctdd-test ()
   (interactive)
@@ -76,5 +79,3 @@
 (defun remove-test-connection (connections)
   (cl-remove-if (lambda (b) (equal (buffer-name b) cider-test-repl)) connections))
 
-(advice-add 'cider-find-connection-buffer-for-project-directory :filter-return #'remove-test-connection)
-(advice-add 'cider-connections :filter-return #'remove-test-connection)
